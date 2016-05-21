@@ -1,3 +1,21 @@
+local path = minetest.get_modpath("tunnels")
+local ROOMS_DISTANCE = 9
+
+-- I hate minetest's default lightning system
+minetest.register_node("tunnels:light", {
+    description = "Light",
+    drawtype = "airlike",
+    walkable = false,
+    pointable = false,
+    diggable = false,
+    buildable_to = true,
+    climbable = false,
+    paramtype = "light",
+    light_source = 12,
+    sunlight_propagates = true,
+    groups = {not_in_creative_inventory=1},
+})
+
 minetest.register_node("tunnels:stone", {
 	description = "Tunnels Stone",
 	tiles = {"default_stone.png^[colorize:green:120"},
@@ -8,23 +26,13 @@ minetest.register_node("tunnels:stone", {
 	sounds = default.node_sound_stone_defaults(),
 })
 
-minetest.register_node("tunnels:stone_inactivated", {
-	description = "Tunnels Stone",
-	tiles = {"default_stone.png^[colorize:red:120"},
-	is_ground_content = true,
-	groups = {cracky=3, stone=1, vein=1},
-	drop = 'tunnels:stone',
-	legacy_mineral = true,
-	sounds = default.node_sound_stone_defaults(),
-})
-
 -- Checks if a given position is already occupied
 local function is_pos_occupied(pos)
 	local name = minetest.get_node(pos).name
-	if name == "air" then
-		return false
-	else
+	if name == "tunnels:stone" then
 		return true
+	else
+		return false
 	end
 end
 
@@ -49,9 +57,9 @@ local function get_neighbour(pos, prefer_horizontal)
 
 	-- Finally, calculate the position
 	local neighbour = {
-		x = pos.x + delta_x,
-		y = pos.y + delta_y,
-		z = pos.z + delta_z}
+		x = pos.x + delta_x * ROOMS_DISTANCE,
+		y = pos.y + delta_y * ROOMS_DISTANCE,
+		z = pos.z + delta_z * ROOMS_DISTANCE}
 
 	-- Return the result
 	return neighbour
@@ -62,17 +70,21 @@ minetest.register_abm({
 	interval = 1,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-
 		local neighbour = get_neighbour(pos, true)
 		if not is_pos_occupied(neighbour) then
-			minetest.set_node(neighbour, node)
+			local schematic = path .. "/schems/basic.mts"
+			local rotation = 0
+			local replacements = {["air"] = "tunnels:light"}
+			minetest.place_schematic(neighbour, schematic, rotation, replacements)
+			local neighbour_meta = minetest.get_meta(neighbour)
+			neighbour_meta:set_string("infotext", "pxnxpznz")
 		end
 
 		-- Inactivate the stem node (there is a 25% chance that it won't be inactivated)
-		if math.random(3) ~= 1 then
-			minetest.set_node(pos, {name = "tunnels:stone_inactivated"})
-			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", "Hello infotext!")
-		end
+--		if math.random(3) ~= 1 then
+--			minetest.set_node(pos, {name = "tunnels:stone_inactivated"})
+--			local meta = minetest.get_meta(pos)
+--			meta:set_string("infotext", "Hello infotext!")
+--		end
 	end,
 })

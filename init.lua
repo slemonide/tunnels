@@ -79,12 +79,5 @@ minetest.register_abm({
 			local neighbour_meta = minetest.get_meta(neighbour)
 			neighbour_meta:set_string("infotext", "pxnxpznz")
 		end
-
-		-- Inactivate the stem node (there is a 25% chance that it won't be inactivated)
---		if math.random(3) ~= 1 then
---			minetest.set_node(pos, {name = "tunnels:stone_inactivated"})
---			local meta = minetest.get_meta(pos)
---			meta:set_string("infotext", "Hello infotext!")
---		end
 	end,
 })

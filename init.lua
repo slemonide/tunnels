@@ -1,10 +1,10 @@
 tunnels = {}
 
-local PATH = minetest.get_modpath("tunnels")
+tunnels.PATH = minetest.get_modpath("tunnels")
 local ROOMS_DISTANCE = 9
 
 -- Load room registration function and some basic rooms
-dofile(PATH .. "/register_room.lua")
+dofile(tunnels.PATH .. "/register_room.lua")
 
 -- I hate minetest's default lightning system
 minetest.register_node("tunnels:light", {
@@ -77,13 +77,7 @@ minetest.register_abm({
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		local neighbour = get_neighbour(pos, true)
 		if not is_pos_occupied(neighbour) then
-			local schematic = PATH .. "/schems/basic.mts"
-			local rotation = 0
-			local replacements = {["air"] = "tunnels:light"}
-			minetest.place_schematic(neighbour, schematic, rotation, replacements)
-			minetest.set_node(neighbour, {name = "tunnels:stone"})
-			local neighbour_meta = minetest.get_meta(neighbour)
-			neighbour_meta:set_string("infotext", "pxnxpznz")
+			tunnels.registered_tunnels[math.random(#tunnels.registered_tunnels)].room_placing_function(neighbour)
 		end
 	end,
 })

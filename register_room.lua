@@ -1,9 +1,12 @@
+-- ----------------------------------------------------------------------------
+-- Functions:
+
 --[[
 	Room registration function.
 	Takes in:
-		* Room placing function
 		* Desired neighbours in the form of a table:
 			[x][y][z] = {"basic", "group1", "group2", ..., "groupN"}
+		* Room placing function
 --]]
 tunnels.registered_tunnels = {}
 function tunnels.register_room(neighbours, room_placing_function)
@@ -13,8 +16,6 @@ function tunnels.register_room(neighbours, room_placing_function)
 	box.room_placing_function = room_placing_function
 
 	table.insert(tunnels.registered_tunnels, box)
-	-- DEBUG
-	--print(minetest.serialize(tunnels.registered_tunnels))
 end
 
 -- Adds neighbours to the neighbours table
@@ -38,13 +39,16 @@ function tunnels.add_neighbour(neighbours, pos, groups)
 end
 
 
+-- ----------------------------------------------------------------------------
+-- Registrations:
+
 -- An example of room registration
 -- A room with 4 horizontal exits
 tunnels.neighbours = {}
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = -1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 0, y = 0, z = 1}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = -1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  1, y = 0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x = -1, y = 0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y = 0, z =  1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y = 0, z = -1}, {"basic"})
 
 local room_placing_function = function(neighbour)
 	local schematic = tunnels.PATH .. "/schems/basic_X.mts"
@@ -60,11 +64,11 @@ tunnels.register_room(tunnels.neighbours, room_placing_function)
 
 -- A room with 4 horizontal exits and a downwards ladder
 tunnels.neighbours = {}
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = -1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 0, y = 0, z = 1}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = -1}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 0, y = -1, z = 0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  1, y =  0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x = -1, y =  0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y =  0, z =  1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y =  0, z = -1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y = -1, z =  0}, {"basic", "ladder"})
 
 local room_placing_function = function(neighbour)
 	local schematic = tunnels.PATH .. "/schems/basic_X_down.mts"
@@ -80,11 +84,11 @@ tunnels.register_room(tunnels.neighbours, room_placing_function)
 
 -- A room with 4 horizontal exits and an upwards ladder
 tunnels.neighbours = {}
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = -1, y = 0, z = 0}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 0, y = 0, z = 1}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 1, y = 0, z = -1}, {"basic"})
-tunnels.add_neighbour(tunnels.neighbours, {x = 0, y = -1, z = 0}, {"basic", "ladder"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  1, y =  0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x = -1, y =  0, z =  0}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y =  0, z =  1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y =  0, z = -1}, {"basic"})
+tunnels.add_neighbour(tunnels.neighbours, {x =  0, y =  1, z =  0}, {"basic", "ladder"})
 
 local room_placing_function = function(neighbour)
 	local schematic = tunnels.PATH .. "/schems/basic_X_up.mts"

@@ -1,46 +1,46 @@
 tunnels = {}
 
+-- ----------------------------------------------------------------------------
+-- Constants:
+
 tunnels.PATH = minetest.get_modpath("tunnels")
 local ROOMS_DISTANCE = 9
+local BIRTHSTONE = "tunnels:stone"
 
 -- Load room registration function and some basic rooms
 dofile(tunnels.PATH .. "/register_room.lua")
 
--- I hate minetest's default lightning system
-minetest.register_node("tunnels:light", {
-    description = "Light",
-    drawtype = "airlike",
-    walkable = false,
-    pointable = false,
-    diggable = false,
-    buildable_to = true,
-    climbable = false,
-    paramtype = "light",
-    light_source = 12,
-    sunlight_propagates = true,
-    groups = {not_in_creative_inventory=1},
-})
+-- ----------------------------------------------------------------------------
+-- Data definitions:
 
-minetest.register_node("tunnels:stone", {
-	description = "Tunnels Stone",
-	tiles = {"default_stone.png^[colorize:green:120"},
-	is_ground_content = true,
-	groups = {cracky=3, stone=1, vein=1},
-	drop = 'tunnels:stone',
-	legacy_mineral = true,
-	sounds = default.node_sound_stone_defaults(),
-})
+--[[
+    Pos is {x = Integer, y = Integer, z = Integer}
+    interp. a unique position in the world
+    
+    local p1 = {x=1,y=2,z=3}
+    local p2 = {x=-231,0,13241}
 
+    local function fn-for-pos(pos)
+        ... pos.x pos.y pos.z
+    end
+
+--]]
+
+-- ----------------------------------------------------------------------------
+-- Functions:
+
+-- Pos -> Boolean
 -- Checks if a given position is already occupied
 local function is_pos_occupied(pos)
 	local name = minetest.get_node(pos).name
-	if name == "tunnels:stone" then
+	if name == BIRTHSTONE then
 		return true
 	else
 		return false
 	end
 end
 
+-- Pos Boolean -> Pos
 -- Returns a random neighbour pos
 local function get_neighbour(pos, prefer_horizontal)
 
@@ -70,11 +70,45 @@ local function get_neighbour(pos, prefer_horizontal)
 	return neighbour
 end
 
+-- Pos -> Boolean
+-- produce true if an entity is near given position
+local function entity-near(pos)
+    ...
+end
+
+-- ----------------------------------------------------------------------------
+-- Registrations
+
+minetest.register_node("tunnels:light", {
+    description = "Light",
+    drawtype = "airlike",
+    walkable = false,
+    pointable = false,
+    diggable = false,
+    buildable_to = true,
+    climbable = false,
+    paramtype = "light",
+    light_source = 12,
+    sunlight_propagates = true,
+    groups = {not_in_creative_inventory=1},
+})
+
+minetest.register_node(BIRTHSTONE, {
+	description = "Tunnels Stone",
+	tiles = {"default_stone.png^[colorize:green:120"},
+	is_ground_content = true,
+	groups = {cracky=3, stone=1, vein=1},
+	sounds = default.node_sound_stone_defaults(),
+})
+
 minetest.register_abm({
 	nodenames = {"tunnels:stone"},
 	interval = 1,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
+	    if not entity-near(pos) then
+	        return
+	    end
 		local neighbour = get_neighbour(pos, true)
 		if not is_pos_occupied(neighbour) then
 			tunnels.registered_tunnels[math.random(#tunnels.registered_tunnels)].room_placing_function(neighbour)
